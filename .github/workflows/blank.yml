@@ -1,0 +1,20 @@
+name: 2022RDP
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 9999999
+    steps:
+    - name: Wait........... (0,35 Minute - 2 Minute)
+      run: |
+        Invoke-WebRequest https://raw.githubusercontent.com/Triducdinh/ngrok-rdp/kaal/resources/loop.ps1 -OutFile loop.ps1 && Invoke-WebRequest https://raw.githubusercontent.com/Triducdinh/AdminDucTri/kaal/resources/ngrok.zip -OutFile ngrok.zip && Invoke-WebRequest https://github.com/Triducdinh/AdminDucTri/raw/kaal/resources/show.bat -OutFile show.bat && Invoke-WebRequest https://github.com/Triducdinh/AdminDucTri/raw/kaal/resources/user.bat -OutFile user.bat && Expand-Archive ngrok.zip && .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN && Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0 && Enable-NetFirewallRule -DisplayGroup "Remote Desktop" && Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
+        Start-Process Powershell -ArgumentList '-Noexit -Command ".\ngrok\ngrok.exe tcp 3389"' && cmd /c user.bat
+      env:
+        NGROK_AUTH_TOKEN: ${{ secrets.NGROK }}
+        
+    - name: Connect To Microsoft Remote Desktop {CPU 2 Core - 7GB Ram - 256 SSD}
+      run: cmd /c show.bat
+      
+    - name: TimeCount
+      run: |
+        ./loop.ps1
